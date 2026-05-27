@@ -1,23 +1,30 @@
-name: LINE Notify Test
+name: Property Check and LINE Notify
 
 on:
+  schedule:
+    - cron: "0 0 * * *"   # JST 9:00（UTC 0:00）
+    - cron: "0 12 * * *"  # JST 21:00（UTC 12:00）
   workflow_dispatch:
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send LINE message
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
         run: |
-          curl -X POST https://api.line.me/v2/bot/message/push \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer ${{ secrets.LINE_TOKEN }}" \
-          -d '{
-            "to": "Uab4e61c38cc410f234b62aaafd39441c",
-            "messages":[
-              {
-                "type":"text",
-                "text":"GitHub Actions から通知テストだよ！"
-              }
-            ]
-          }'
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run property checker
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+        run: |
+          python main.py
