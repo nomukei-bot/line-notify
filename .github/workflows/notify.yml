@@ -1,0 +1,23 @@
+name: LINE Notify Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send LINE message
+        run: |
+          curl -X POST https://api.line.me/v2/bot/message/push \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.LINE_TOKEN }}" \
+          -d '{
+            "to": "Uab4e61c38cc410f234b62aaafd39441c",
+            "messages":[
+              {
+                "type":"text",
+                "text":"GitHub Actions から通知テストだよ！"
+              }
+            ]
+          }'
